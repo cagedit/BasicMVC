@@ -17,4 +17,11 @@ class GenericHelper
 
 		return self::$staticPath;
 	}
+
+	public static function appPathAppend($append)
+	{
+		$path = self::staticPath();
+		$path = $path . '/app/' . $append;
+		return $path;
+	}
 }

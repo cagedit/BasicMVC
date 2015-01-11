@@ -3,6 +3,11 @@ namespace Core;
 class Bootstrap
 {
 
+	/**
+	 * Constructor
+	 *
+	 * Load all the Core files required in order for the application to run.
+	 */
 	public function __construct()
 	{
 		$loadOnly = ['ClassLoader'];
@@ -18,7 +23,7 @@ class Bootstrap
 			new $class;
 		}
 
-		new \Controllers\TestController('test');
+		new \Controllers\TestController;
 	}
 
 }
