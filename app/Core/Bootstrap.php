@@ -10,7 +10,7 @@ class Bootstrap
 	 */
 	public function __construct()
 	{
-		$loadOnly = ['ClassLoader'];
+		$loadOnly = ['ClassLoader', 'Functions'];
 		$instantiate = ['Router', 'GenericHelper'];
 
 		foreach ($loadOnly as $neededClass) {
@@ -23,7 +23,8 @@ class Bootstrap
 			new $class;
 		}
 
-		new \Controllers\TestController;
+		require_once(GenericHelper::staticPath() . '/app/Routes.php');
+		Router::route();
 	}
 
 }

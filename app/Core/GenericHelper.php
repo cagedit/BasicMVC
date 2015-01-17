@@ -4,11 +4,6 @@ class GenericHelper
 {
 	private static $staticPath;
 
-	public function __construct()
-	{
-
-	}
-
 	public static function staticPath()
 	{
 		if(empty(self::$staticPath)) {
