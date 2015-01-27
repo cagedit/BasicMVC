@@ -6,36 +6,56 @@ use Functions;
 
 class TemplatingEngine
 {
-	private $data;
+	private $master;
+	private $subFile;
 
 	public function __construct($data)
 	{
-		$this->data = $data;
-		$this->methods = $this->getMethods();
+		$this->master = $data;
+
 		// If the very first method on the page is the extends command set it
 		if (isset($this->methods[1][0]) && $this->methods[1][0] == 'extends') {
 			$master = $this->methods[2][0];
-			$subdata = $this->data;
+			$this->subFile = $this->master;
 
-			$this->data = view('master')->get();
+			$this->master = view('master')->get();
+			$this->replaceSectionContent();
 		}
 	}
 
 	public function getData()
 	{
-		return $this->data;
+		return $this->master;
 	}
 
 	/**
-	 * Get an array of all of the @methods that are in the view
-	 *
-	 * Note this is called automatically by the constructor
-	 * @return array All of the @methods
+	 * Replaces the yield commands in the master with the contents of that same
+	 * section in the sub file
 	 */
-	public function getMethods()
+	public function replaceSectionContent()
 	{
-		preg_match_all("/@([a-z]{1,20})\(\'([a-z]{1,40})\'\)/mi", $this->data, $matches);
-		return $matches;
+		if (empty($this->master) || empty($this->subFile)) {
+			return;
+		}
+
+		preg_match_all("/@section\('([a-zA-Z0-9]{0,30})'\)([\s\S]*?)@endsection/im", $this->subFile, $sectionMatches);
+		preg_match_all("/@yield\('([a-zA-Z0-9]{1,30})'\)/im", $this->master, $yieldMatches);
+
+		if (empty($sectionMatches) || empty($yieldMatches)) {
+			return;
+		}
+
+		foreach ($sectionMatches[1] as $index => $sectionName) {
+			$content[$sectionName] = $sectionMatches[2][$index];
+		}
+
+		foreach ($yieldMatches[1] as $index => $matchName) {
+			if (isset($content[$matchName])) {
+				$this->master = str_replace($yieldMatches[0][$index], $content[$matchName], $this->master);
+			} else {
+				$this->master = str_replace($yieldMatches[0][$index], '', $this->master);
+			}
+		}
 	}
 
 }

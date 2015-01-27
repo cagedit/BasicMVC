@@ -40,8 +40,10 @@ class View
 		}
 
 		if (file_exists($this->path)) {
+			ob_start();
 			require_once($this->path);
 			$view = ob_get_clean();
+
 			$view = $this->parseView($view);
 
 			ob_start();
